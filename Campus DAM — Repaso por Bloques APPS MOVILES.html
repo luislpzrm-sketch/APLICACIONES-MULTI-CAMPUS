@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Campus DAM">
+<meta name="theme-color" content="#0f172a">
+<title>Campus DAM — Repaso por Bloques</title>
+<style>
+:root{
+  --bg:#f1f5f9;--card:#fff;--brd:#e2e8f0;--txt:#0f172a;--sub:#64748b;
+  --ok:#16a34a;--okb:#f0fdf4;--bad:#dc2626;--badb:#fef2f2;
+  --dom:#d97706;--domb:#fffbeb;
+  --c1:#2563eb;--c2:#7c3aed;--c3:#0891b2;
+  --c4:#059669;--c5:#dc2626;--c6:#9333ea;--c7:#0f766e;
+  --bank:#b91c1c;
+  --safe-t:env(safe-area-inset-top,0px);
+  --safe-b:env(safe-area-inset-bottom,0px);
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{min-height:100%;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:var(--txt);font-size:15px}
+
+/* SPLASH */
+#splash{position:fixed;inset:0;background:#0f172a;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:999;transition:opacity .4s}
+.sp-ico{font-size:60px;margin-bottom:16px}
+#splash h1{color:#fff;font-size:22px;font-weight:800;letter-spacing:-.3px}
+#splash p{color:rgba(255,255,255,.5);font-size:13px;margin-top:6px}
+
+/* HOME */
+#home{display:none;padding:0 0 calc(20px + var(--safe-b));padding-top:var(--safe-t)}
+.home-hero{background:#0f172a;padding:20px 16px 18px;color:#fff}
+.home-hero h1{font-size:20px;font-weight:800}
+.home-hero p{font-size:12px;color:rgba(255,255,255,.5);margin-top:3px}
+.home-pills{display:flex;gap:8px;margin-top:14px;overflow-x:auto;padding-bottom:2px}
+.hpill{flex-shrink:0;background:rgba(255,255,255,.1);border-radius:10px;padding:8px 12px;text-align:center;min-width:64px}
+.hpill .n{font-size:20px;font-weight:700}
+.hpill .l{font-size:10px;color:rgba(255,255,255,.5);margin-top:2px}
+
+.section-lbl{font-size:11px;font-weight:700;letter-spacing:.8px;color:var(--sub);text-transform:uppercase;padding:16px 16px 6px}
+
+.bcard{background:var(--card);margin:0 12px 10px;border-radius:14px;border:1px solid var(--brd);overflow:hidden;cursor:pointer;transition:transform .1s,box-shadow .1s}
+.bcard:active{transform:scale(.98)}
+.bcard-top{display:flex;align-items:center;gap:12px;padding:14px}
+.bico{width:46px;height:46px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
+.btitles{flex:1;min-width:0}
+.btitles h2{font-size:15px;font-weight:700;line-height:1.2}
+.btitles p{font-size:11px;color:var(--sub);margin-top:3px;line-height:1.4}
+.bprog{padding:0 14px 12px;display:flex;align-items:center;gap:10px}
+.bbar{flex:1;height:5px;background:#f1f5f9;border-radius:3px;overflow:hidden}
+.bbar-fill{height:100%;border-radius:3px;transition:width .4s}
+.bstats{display:flex;gap:12px;font-size:11px;color:var(--sub);white-space:nowrap}
+.bstats strong{color:var(--txt)}
+.bstart{padding:6px 14px;border-radius:8px;border:none;font-size:12px;font-weight:700;color:#fff;cursor:pointer;white-space:nowrap;flex-shrink:0}
+
+.bank-card{background:#fef2f2;margin:0 12px 10px;border-radius:14px;border:1px solid #fecaca;cursor:pointer;transition:transform .1s}
+.bank-card:active{transform:scale(.98)}
+.bank-top{display:flex;align-items:center;gap:12px;padding:14px}
+.bank-ico{width:46px;height:46px;border-radius:12px;background:#dc2626;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
+.bank-info h2{font-size:15px;font-weight:700;color:#b91c1c}
+.bank-info p{font-size:11px;color:#ef4444;margin-top:3px}
+.bank-empty{text-align:center;color:var(--sub);font-size:12px;padding:8px 14px 14px}
+.btn-bank{margin-left:auto;padding:6px 14px;border-radius:8px;border:none;font-size:12px;font-weight:700;background:#dc2626;color:#fff;cursor:pointer;flex-shrink:0}
+
+/* QUIZ */
+#quiz{display:none;flex-direction:column;height:100svh;height:100vh}
+#qtop{color:#fff;padding:10px 14px;display:flex;align-items:center;gap:10px;flex-shrink:0;padding-top:calc(10px + var(--safe-t))}
+#qback{background:none;border:none;color:#fff;font-size:22px;cursor:pointer;padding:2px 6px 2px 0;line-height:1}
+#qtitle{font-size:14px;font-weight:700;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#qcount{font-size:13px;opacity:.7;white-space:nowrap}
+#qprog{height:3px;flex-shrink:0;background:rgba(255,255,255,.2)}
+#qprogfill{height:100%;transition:width .3s}
+#qscroll{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:12px 12px 4px}
+#qbot{flex-shrink:0;background:var(--card);border-top:1px solid var(--brd);padding:10px 12px calc(10px + var(--safe-b));display:flex;gap:8px}
+#qbot button{flex:1;padding:13px;border-radius:10px;border:none;font-size:14px;font-weight:700;cursor:pointer}
+#bnxt{background:#0f172a;color:#fff}
+#bnxt:disabled{opacity:.35}
+#bdom{background:var(--dom);color:#fff;display:none}
+
+.qcard{background:var(--card);border-radius:14px;padding:16px;margin-bottom:10px;border:1px solid var(--brd)}
+.qmeta{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+.qbadge{font-size:11px;border-radius:6px;padding:3px 8px;border:1px solid currentColor}
+.qtxt{font-size:16px;font-weight:600;line-height:1.5;margin-bottom:14px}
+.opts{display:flex;flex-direction:column;gap:8px}
+.obtn{display:flex;align-items:flex-start;gap:10px;padding:12px;border-radius:10px;border:1px solid var(--brd);background:var(--bg);text-align:left;cursor:pointer;font-size:14px;line-height:1.4;width:100%}
+.obtn:disabled{cursor:default}
+.oltr{width:26px;height:26px;border-radius:50%;background:var(--brd);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0;margin-top:1px}
+.obtn.ok{background:var(--okb);border-color:var(--ok)}
+.obtn.ok .oltr{background:var(--ok);color:#fff}
+.obtn.bad{background:var(--badb);border-color:var(--bad)}
+.obtn.bad .oltr{background:var(--bad);color:#fff}
+.fb{border-radius:10px;background:#f8fafc;border:1px solid var(--brd);padding:12px;margin-top:10px;font-size:13px;line-height:1.6;display:none}
+.fb.vis{display:block}
+
+/* RESULT */
+.rcard{background:var(--card);border-radius:16px;margin:12px;padding:24px;text-align:center;border:1px solid var(--brd)}
+.rpct{font-size:60px;font-weight:900;line-height:1}
+.rlbl{font-size:14px;color:var(--sub);margin:6px 0 16px}
+.rstats{display:flex;gap:10px;justify-content:center;margin-bottom:16px}
+.rst{background:var(--bg);border-radius:8px;padding:8px 14px;font-size:13px}
+.rnotice{border-radius:10px;padding:12px;margin-bottom:12px;font-size:13px;text-align:left}
+.rbtns{display:flex;flex-direction:column;gap:8px}
+.rbtns button{padding:13px;border-radius:10px;border:none;font-size:14px;font-weight:700;cursor:pointer}
+.rb-pri{background:#0f172a;color:#fff}
+.rb-sec{background:var(--bg);color:var(--txt);border:1px solid var(--brd)!important}
+.rb-bank{background:#dc2626;color:#fff}
+</style>
+</head>
+<body>
+
+<div id="splash">
+  <div class="sp-ico">🎓</div>
+  <h1>Campus DAM</h1>
+  <p>Programación Multimedia · ILERNA</p>
+</div>
+
+<div id="home">
+  <div class="home-hero">
+    <h1>🎓 Campus DAM</h1>
+    <p>Preguntas oficiales del campus ILERNA · 185 preguntas · 7 bloques</p>
+    <div class="home-pills">
+      <div class="hpill"><div class="n" id="hs-tot">194</div><div class="l">Total</div></div>
+      <div class="hpill"><div class="n" id="hs-vis">0</div><div class="l">Vistas</div></div>
+      <div class="hpill"><div class="n" id="hs-ok">0</div><div class="l">Correctas</div></div>
+      <div class="hpill"><div class="n" id="hs-bank">0</div><div class="l">En banco</div></div>
+      <div class="hpill"><div class="n" id="hs-dom">0</div><div class="l">Dominadas</div></div>
+    </div>
+  </div>
+
+  <div class="section-lbl">🤖 Android</div>
+
+  <div class="bcard" onclick="startBlock('B1')">
+    <div class="bcard-top">
+      <div class="bico" style="background:#eff6ff;color:#2563eb">📱</div>
+      <div class="btitles">
+        <h2>B1 — Android: Fundamentos</h2>
+        <p>AndroidManifest · Componentes · Ciclo de vida · Intents · ADB · Gradle</p>
+      </div>
+    </div>
+    <div class="bprog">
+      <div class="bbar"><div class="bbar-fill" id="bar-B1" style="background:#2563eb;width:0%"></div></div>
+      <div class="bstats">✓<strong id="ok-B1">0</strong> ✗<strong id="bad-B1">0</strong> ?<strong id="un-B1">26</strong></div>
+      <button class="bstart" style="background:#2563eb" onclick="event.stopPropagation();startBlock('B1')">Empezar</button>
+    </div>
+  </div>
+
+  <div class="bcard" onclick="startBlock('B2')">
+    <div class="bcard-top">
+      <div class="bico" style="background:#f5f3ff;color:#7c3aed">🖼️</div>
+      <div class="btitles">
+        <h2>B2 — Android: Layouts y UI</h2>
+        <p>ConstraintLayout · LinearLayout · ScrollView · Views · RecyclerView · Toast · Fragment</p>
+      </div>
+    </div>
+    <div class="bprog">
+      <div class="bbar"><div class="bbar-fill" id="bar-B2" style="background:#7c3aed;width:0%"></div></div>
+      <div class="bstats">✓<strong id="ok-B2">0</strong> ✗<strong id="bad-B2">0</strong> ?<strong id="un-B2">22</strong></div>
+      <button class="bstart" style="background:#7c3aed" onclick="event.stopPropagation();startBlock('B2')">Empezar</button>
+    </div>
+  </div>
+
+  <div class="bcard" onclick="startBlock('B3')">
+    <div class="bcard-top">
+      <div class="bico" style="background:#ecfeff;color:#0891b2">🗄️</div>
+      <div class="btitles">
+        <h2>B3 — Android: Bases de datos</h2>
+        <p>SQLite · Room · Firebase Realtime · DAO · Entity · @Database</p>
+      </div>
+    </div>
+    <div class="bprog">
+      <div class="bbar"><div class="bbar-fill" id="bar-B3" style="background:#0891b2;width:0%"></div></div>
+      <div class="bstats">✓<strong id="ok-B3">0</strong> ✗<strong id="bad-B3">0</strong> ?<strong id="un-B3">21</strong></div>
+      <button class="bstart" style="background:#0891b2" onclick="event.stopPropagation();startBlock('B3')">Empezar</button>
+    </div>
+  </div>
+
+  <div class="section-lbl">🎵 Multimedia</div>
+
+  <div class="bcard" onclick="startBlock('B4')">
+    <div class="bcard-top">
+      <div class="bico" style="background:#ecfdf5;color:#059669">🎵</div>
+      <div class="btitles">
+        <h2>B4 — Multimedia: Audio y vídeo</h2>
+        <p>AudioTrack · SoundPool · ToneGenerator · MediaPlayer · ExoPlayer · VolumeShaper · RTP · MediaRecorder</p>
+      </div>
+    </div>
+    <div class="bprog">
+      <div class="bbar"><div class="bbar-fill" id="bar-B4" style="background:#059669;width:0%"></div></div>
+      <div class="bstats">✓<strong id="ok-B4">0</strong> ✗<strong id="bad-B4">0</strong> ?<strong id="un-B4">28</strong></div>
+      <button class="bstart" style="background:#059669" onclick="event.stopPropagation();startBlock('B4')">Empezar</button>
+    </div>
+  </div>
+
+  <div class="bcard" onclick="startBlock('B5')">
+    <div class="bcard-top">
+      <div class="bico" style="background:#fef2f2;color:#dc2626">🔒</div>
+      <div class="btitles">
+        <h2>B5 — Multimedia: Permisos y sensores</h2>
+        <p>Permisos peligrosos · Cámara · Micrófono · GPS · Almacenamiento · SurfaceView · Servicios</p>
+      </div>
+    </div>
+    <div class="bprog">
+      <div class="bbar"><div class="bbar-fill" id="bar-B5" style="background:#dc2626;width:0%"></div></div>
+      <div class="bstats">✓<strong id="ok-B5">0</strong> ✗<strong id="bad-B5">0</strong> ?<strong id="un-B5">27</strong></div>
+      <button class="bstart" style="background:#dc2626" onclick="event.stopPropagation();startBlock('B5')">Empezar</button>
+    </div>
+  </div>
+
+  <div class="section-lbl">🎮 Unity y motores gráficos</div>
+
+  <div class="bcard" onclick="startBlock('B6')">
+    <div class="bcard-top">
+      <div class="bico" style="background:#faf5ff;color:#9333ea">🎮</div>
+      <div class="btitles">
+        <h2>B6 — Motores gráficos: Conceptos base</h2>
+        <p>Motor gráfico · Unity · OpenGL · DirectX · Shaders · Sprites · Animaciones · Renderizado</p>
+      </div>
+    </div>
+    <div class="bprog">
+      <div class="bbar"><div class="bbar-fill" id="bar-B6" style="background:#9333ea;width:0%"></div></div>
+      <div class="bstats">✓<strong id="ok-B6">0</strong> ✗<strong id="bad-B6">0</strong> ?<strong id="un-B6">34</strong></div>
+      <button class="bstart" style="background:#9333ea" onclick="event.stopPropagation();startBlock('B6')">Empezar</button>
+    </div>
+  </div>
+
+  <div class="bcard" onclick="startBlock('B7')">
+    <div class="bcard-top">
+      <div class="bico" style="background:#f0fdfa;color:#0f766e">⚙️</div>
+      <div class="btitles">
+        <h2>B7 — Motores gráficos: Física y código</h2>
+        <p>Rigidbody · Colliders · Triggers · Raycast · Character Controller · IA · Pathfinding · MVC · Historia</p>
+      </div>
+    </div>
+    <div class="bprog">
+      <div class="bbar"><div class="bbar-fill" id="bar-B7" style="background:#0f766e;width:0%"></div></div>
+      <div class="bstats">✓<strong id="ok-B7">0</strong> ✗<strong id="bad-B7">0</strong> ?<strong id="un-B7">27</strong></div>
+      <button class="bstart" style="background:#0f766e" onclick="event.stopPropagation();startBlock('B7')">Empezar</button>
+    </div>
+  </div>
+
+  <div class="section-lbl">🔁 Banco de repaso</div>
+
+  <div class="bank-card" onclick="startBank()">
+    <div class="bank-top">
+      <div class="bank-ico">🔁</div>
+      <div class="bank-info">
+        <h2>Banco de Repaso</h2>
+        <p id="bank-desc">Acumula las falladas de todos los bloques</p>
+      </div>
+      <button class="btn-bank" onclick="event.stopPropagation();startBank()">Repasar →</button>
+    </div>
+    <div id="bank-empty" class="bank-empty" style="display:none">✅ ¡Sin pendientes! Sigue practicando los bloques.</div>
+  </div>
+</div>
+
+<!-- QUIZ -->
+<div id="quiz">
+  <div id="qtop">
+    <button id="qback" onclick="goHome()">‹</button>
+    <span id="qtitle">Bloque</span>
+    <span id="qcount">1/26</span>
+  </div>
+  <div id="qprog"><div id="qprogfill" style="width:0%"></div></div>
+  <div id="qscroll"><div id="qa"></div></div>
+  <div id="qbot">
+    <button id="bnxt" disabled onclick="nxt()">Siguiente →</button>
+    <button id="bdom" onclick="markDom()">⭐ Dominada</button>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════════
+// PREGUNTAS — 7 bloques
+// Formato: [id, bloque, tema, pregunta, [opciones], idx_correcta]
+// ══════════════════════════════════════════
+
+var BLOCKS = {
+B1:{name:"B1 — Android: Fundamentos",color:"#2563eb",n:26,
+qs:[
+[1,"B1","AndroidManifest","¿Cuál es la función del archivo AndroidManifest.xml en una aplicación de Android?",["Contiene el código fuente de la aplicación.","Contiene los recursos utilizados por la aplicación.","Define la estructura de la aplicación y sus componentes, como las actividades y servicios.","Almacena los datos de la aplicación."],2],
+[2,"B1","Componentes","¿Qué es un BroadcastReceiver?",["Un componente que muestra una lista de elementos desplazable.","Un componente que se utiliza para almacenar datos en la base de datos de la aplicación.","Un componente que permite a la aplicación recibir mensajes del sistema o de otras aplicaciones.","Un componente que muestra una notificación en la barra de estado del dispositivo."],2],
+[3,"B1","Ciclo de vida","¿Cuál es el método que se llama cuando se crea una actividad en Android?",["onCreate()","onStart()","onResume()","onPause()"],0],
+[4,"B1","Ciclo de vida","¿Cómo se puede finalizar una actividad en Android?",["Llamando al método finish()","Llamando al método destroy()","Llamando al método stop()","Llamando al método exit()"],0],
+[5,"B1","Ciclo de vida","¿Qué es el método onActivityResult() en Android?",["Un método para obtener una referencia a un objeto View en el layout de una actividad.","Un método que se llama cuando una actividad finaliza y devuelve un resultado a la actividad que la llamó.","Un método utilizado para hacer una llamada a una API en Android.","Un método utilizado para obtener los resultados de una consulta a la base de datos."],1],
+[6,"B1","Ciclo de vida","¿Qué es el método onPause() en Android?",["Un método que se llama cuando se crea una actividad en Android.","Un método que se llama cuando una actividad finaliza y devuelve un resultado a la actividad que la llamó.","Un método que se llama cuando una actividad pierde el foco y se vuelve parcialmente visible.","Un método que se llama cuando una actividad se muestra en pantalla y es visible para el usuario."],2],
+[7,"B1","Ciclo de vida","¿Qué es el método onSaveInstanceState() en Android?",["Un método que se llama cuando se crea una actividad en Android.","Un método que se llama cuando una actividad finaliza y devuelve un resultado a la actividad que la llamó.","Un método utilizado para guardar el estado de una actividad antes de que sea destruida.","Un método utilizado para restaurar el estado de una actividad después de que se haya destruido."],2],
+[8,"B1","Ciclo de vida","¿Qué métodos se ejecutan al crear una actividad (en orden)?",["onCreate(), onStart() y onPause()","onCreate(), onStart() y onResume()","onCreate(), onStart() y onRestart()","onStart(), onResume() y onRestart()"],1],
+[9,"B1","Ciclo de vida","¿Qué métodos se ejecutan al cerrar una actividad?",["onPause(), onStop() y onDestroy()","onPause(), onResume() y onDestroy()","onStop(), onPause() y onResume()","onPause(), onRestart() y onResume()"],0],
+[10,"B1","Ciclo de vida","¿Qué métodos se ejecutan al volver a una actividad?",["onPause(), onRestart() y onResume()","onPause(), onResume() y onDestroy()","onStop(), onPause() y onRestart()","onRestart(), onStart() y onResume()"],3],
+[11,"B1","Intents","¿Cómo se envían datos entre actividades en Android?",["Se envían y reciben mediante getExtras()","Se envían y reciben mediante putExtra()","Se envían mediante putExtra() y se reciben con getExtras()","Se envían mediante getExtras() y se reciben con putExtras()"],2],
+[12,"B1","Intents","¿Cuál es el componente que lanza una actividad en Android?",["Layout","Botón","Intent","Activity"],2],
+[13,"B1","Red","¿Cuál es el método utilizado para hacer una llamada a una API en Android?",["HttpConnection.request()","HttpUrlConnection.open()","HttpClient.execute()","HttpRequest.send()"],2],
+[14,"B1","Android Studio","¿Qué es Android Studio?",["Un sistema operativo para dispositivos móviles.","Un IDE para el desarrollo de aplicaciones móviles Android.","Una biblioteca de componentes para aplicaciones Android.","Una herramienta para probar aplicaciones Android."],1],
+[15,"B1","Android Studio","¿Cuál de estos lenguajes de programación se utiliza en Android Studio?",["COBOL","C++","Python","Kotlin"],3],
+[16,"B1","Android Studio","¿Qué es Gradle en Android Studio?",["Un sistema de gestión de bases de datos relacionales.","Un servidor de base de datos en tiempo real.","Un lenguaje de programación utilizado para el desarrollo de aplicaciones Android.","Un sistema de construcción de proyectos y gestión de dependencias."],3],
+[17,"B1","Android Studio","¿Qué son los AVD (Android Virtual Devices) en Android Studio?",["Dispositivos móviles reales.","Emuladores de dispositivos móviles.","Bibliotecas de componentes para aplicaciones Android.","Herramientas para depurar aplicaciones Android."],1],
+[18,"B1","Android Studio","¿Qué es el Android Emulator en Android Studio?",["Un dispositivo móvil real.","Un emulador de dispositivos móviles.","Una biblioteca de componentes para aplicaciones Android.","Una herramienta para depurar aplicaciones Android."],1],
+[19,"B1","Depuración","¿Qué es ADB en Android Studio?",["Una herramienta para crear y administrar bases de datos en Android.","Una herramienta para depurar aplicaciones Android en dispositivos reales y emuladores.","Una biblioteca de componentes para aplicaciones Android.","Un sistema de construcción de proyectos y gestión de dependencias."],1],
+[20,"B1","Arquitectura","¿Qué es la capa de servicios en la arquitectura de Android?",["Una capa que proporciona la interfaz de usuario para una aplicación Android.","Una capa que proporciona acceso a los recursos de la aplicación, como archivos y bases de datos.","Una capa que proporciona servicios de fondo para la aplicación, como notificaciones y sincronización de datos.","Una capa que proporciona los componentes de la interfaz de usuario, como botones y campos de texto."],2],
+[21,"B1","Servicios","¿Qué es un servicio en Android?",["Una clase para crear notificaciones en la barra de estado.","Una clase para realizar operaciones en segundo plano.","Una clase para crear diálogos de alerta.","Una clase para crear menús emergentes."],1],
+[22,"B1","Servicios","¿Cómo se puede iniciar un servicio en Android?",["A través de un Intent.","A través de un Broadcast Receiver.","A través de un Content Provider.","A través de una Activity."],0],
+[23,"B1","Componentes","¿Qué son los Content Providers en Android?",["Mecanismos para gestionar permisos de red.","Mecanismos que detectan y reaccionan a mensajes globales del sistema.","Componentes que permiten compartir datos entre aplicaciones.","Componentes sin interfaz gráfica que se ejecutan en segundo plano."],2],
+[24,"B1","AsyncTask","¿Qué es AsyncTask en Android?",["Una clase de audio para reproducción en segundo plano.","Una clase para ejecutar operaciones en un hilo secundario y actualizar la UI al terminar.","Una clase para gestionar servicios de fondo permanentes.","Una clase para gestionar conexiones de red."],1],
+[25,"B1","AsyncTask","¿Cuáles son los dos métodos obligatorios de AsyncTask?",["start() y onFinishExecute()","doInBackground() y start()","onExecute() y onPostExecute()","doInBackground() y onPostExecute()"],3],
+[26,"B1","Componentes","¿Qué clase es la base para todos los elementos de diseño de Android?",["View","ViewGroup","Layout","Widget"],0]
+]},
+
+B2:{name:"B2 — Android: Layouts y UI",color:"#7c3aed",n:22,
+qs:[
+[27,"B2","Layouts","¿Qué es un ConstraintLayout?",["Un layout que organiza los elementos en filas y columnas.","Un layout que organiza los elementos en una lista desplazable.","Un layout que organiza los elementos mediante restricciones entre ellos.","Un layout que organiza los elementos en una rejilla."],2],
+[28,"B2","Layouts","¿Qué es un ConstraintLayout en Android Studio?",["Un layout que organiza los elementos en una cuadrícula.","Un layout que organiza los elementos en una lista.","Un layout que permite definir las relaciones entre los elementos.","Un layout que permite definir las propiedades de los elementos."],2],
+[29,"B2","Layouts","¿Qué es un ScrollView?",["Un layout que organiza los elementos en filas y columnas.","Un layout que organiza los elementos en una lista desplazable.","Un layout que organiza los elementos mediante restricciones entre ellos.","Un layout que organiza los elementos en una rejilla."],1],
+[30,"B2","Layouts","¿Cuál es la diferencia entre un LinearLayout horizontal y uno vertical?",["El LinearLayout horizontal organiza los elementos en filas y el vertical los organiza en columnas.","El LinearLayout horizontal organiza los elementos en columnas y el vertical los organiza en filas.","El LinearLayout horizontal se utiliza para elementos de tamaño variable y el vertical para elementos de tamaño fijo.","No hay diferencia entre ellos, son lo mismo pero con diferente nombre."],0],
+[31,"B2","Layouts","¿Cuál es el propósito de la etiqueta include en un layout de Android?",["Se utiliza para incluir un archivo de diseño dentro de otro archivo de diseño.","Se utiliza para definir un estilo para un elemento de diseño.","Se utiliza para definir una vista personalizada.","Se utiliza para definir un recurso de animación."],0],
+[32,"B2","Views","¿Cuál es el método para obtener una referencia a un objeto View en el layout?",["findViewById()","getViewById()","findView()","getComponentById()"],0],
+[33,"B2","Views","¿Qué es un RecyclerView?",["Un componente que muestra una lista de elementos desplazable.","Un componente que se utiliza para almacenar datos en la base de datos de la aplicación.","Un componente que muestra una notificación en la barra de estado del dispositivo.","Un componente que se utiliza para mostrar una tabla de datos en la pantalla."],0],
+[34,"B2","Views","¿Qué es un ListView en Android?",["Es un elemento de comunicación entre los distintos componentes de una aplicación.","Mediante librerías, permiten manipular datos en un XML.","Permite almacenar la configuración del usuario en la aplicación.","Un componente que muestra una lista vertical de elementos desplazable."],3],
+[35,"B2","Toast","¿Qué es Toast en Android?",["Una clase para crear una notificación en la barra de estado.","Una clase para mostrar mensajes cortos en la pantalla.","Una clase para crear diálogos de alerta.","Una clase para crear menús emergentes."],1],
+[36,"B2","Toast","¿Cuál es el método para mostrar un Toast en Android?",["show()","display()","toast()","message()"],0],
+[37,"B2","Toast","¿Cuánto tiempo se muestra por defecto un Toast en Android?",["1 segundo","2 segundos","3 segundos","4 segundos"],1],
+[38,"B2","UI","¿Qué es el material design en el diseño de interfaces de usuario?",["Un conjunto de normas y directrices que se utilizan para diseñar interfaces de usuario accesibles.","Un conjunto de herramientas y recursos que se utilizan para diseñar interfaces de usuario en Android.","Un conjunto de elementos gráficos que se utilizan para diseñar interfaces de usuario en iOS.","Un conjunto de técnicas y métodos que se utilizan para diseñar interfaces de usuario en realidad aumentada."],1],
+[39,"B2","UI","¿Qué es el parallax scrolling en el diseño de interfaces de usuario?",["Una técnica que se utiliza para crear animaciones de transición entre diferentes pantallas en una aplicación.","Una técnica que se utiliza para simular la profundidad en la interfaz de usuario mediante la animación de diferentes capas de objetos.","Una técnica que se utiliza para mostrar la información de la aplicación de forma animada en la pantalla del dispositivo.","Una técnica que se utiliza para diseñar botones y elementos de la interfaz gráfica de usuario."],1],
+[40,"B2","UI","¿Qué es un fragment en el desarrollo de aplicaciones móviles?",["Una parte de la aplicación que se encarga de la gestión de la memoria y los recursos.","Un objeto que se utiliza para la interacción táctil del usuario con la aplicación.","Una estructura que define la posición y el tamaño de los elementos en una interfaz gráfica de usuario.","Una porción modular y reutilizable de la interfaz de usuario de una actividad."],3],
+[41,"B2","Permisos","¿Cómo se solicita un permiso en tiempo real en Android?",["A través del archivo AndroidManifest.xml.","A través del archivo build.gradle.","A través de la clase PermissionRequest.","A través de la clase ActivityCompat."],3],
+[42,"B2","Permisos","¿Qué es el método shouldShowRequestPermissionRationale() en Android?",["Un método que comprueba si un permiso está otorgado o no.","Un método que solicita un permiso en tiempo real.","Un método que comprueba si se debe mostrar una explicación para solicitar un permiso.","Un método que comprueba si un permiso es peligroso o no."],2],
+[43,"B2","Permisos","¿Qué es el método onRequestPermissionsResult() en Android?",["Un método que solicita un permiso en tiempo real.","Un método que comprueba si un permiso está otorgado o no.","Un método que se llama cuando se otorga o deniega un permiso en tiempo real.","Un método que comprueba si se debe mostrar una explicación para solicitar un permiso."],2],
+[44,"B2","Permisos","¿Cuál es la forma de solicitar permisos en Android?",["Mediante un archivo de configuración.","Mediante la configuración de la aplicación en el sistema operativo.","Mediante un cuadro de diálogo que se muestra al usuario.","Mediante la ejecución de una línea de código."],2],
+[45,"B2","Permisos","¿Qué son los permisos en Android?",["Mecanismos de seguridad que permiten a una aplicación acceder a recursos del sistema protegidos.","Mecanismos de seguridad que permiten a una aplicación acceder a recursos del sistema públicos.","Mecanismos de seguridad que permiten a una aplicación acceder a cualquier recurso del sistema.","Mecanismos de seguridad que no permiten a una aplicación acceder a ningún recurso del sistema."],0],
+[46,"B2","Permisos","¿Qué es un permiso peligroso en Android?",["Un permiso que se otorga automáticamente a las aplicaciones.","Un permiso que se solicita automáticamente a las aplicaciones.","Un permiso que controla el acceso a los recursos más críticos del dispositivo.","Un permiso que controla el acceso a los recursos menos críticos del dispositivo."],2],
+[47,"B2","Permisos","¿Qué es un permiso en Android?",["Una función que controla el acceso de una aplicación a los recursos del dispositivo.","Una función que controla el acceso de una aplicación a la red.","Una función que controla el acceso de una aplicación a la interfaz de usuario.","Una función que controla el acceso de una aplicación a la memoria del dispositivo."],0],
+[48,"B2","Permisos","¿A partir de qué API los permisos peligrosos deben solicitarse en tiempo de ejecución?",["API 19","API 21","API 23","API 26"],2]
+]},
+
+B3:{name:"B3 — Android: Bases de datos",color:"#0891b2",n:21,
+qs:[
+[49,"B3","SQLite","¿Qué es SQLite?",["Una base de datos relacional de código abierto.","Un servidor de base de datos en tiempo real.","Un lenguaje de programación utilizado para desarrollar aplicaciones Android.","Una biblioteca de gráficos para Android."],0],
+[50,"B3","SQLite","¿Qué es una transacción en SQLite?",["Un conjunto de operaciones SQL que se realizan de forma atómica.","Un registro de cambios en la base de datos.","Una operación para eliminar datos de la base de datos.","Un comando para cambiar la estructura de la base de datos."],0],
+[51,"B3","SQLite","¿Qué es una cláusula WHERE en una consulta SQL?",["Una cláusula para ordenar los resultados de una consulta.","Una cláusula para limitar el número de resultados devueltos por una consulta.","Una cláusula para especificar las columnas que se deben incluir en los resultados de una consulta.","Una cláusula para filtrar los resultados de una consulta según ciertos criterios."],3],
+[52,"B3","SQLite","¿Qué es un Cursor en SQLite?",["Un objeto que se utiliza para almacenar los resultados de una consulta SQL.","Un objeto que se utiliza para realizar operaciones en la base de datos.","Un objeto que se utiliza para acceder a los recursos de la aplicación.","Un objeto que se utiliza para enviar datos a través de una red."],0],
+[53,"B3","SQLite","¿Qué es el método execSQL() en SQLite?",["Un método para abrir la base de datos.","Un método para cerrar la base de datos.","Un método para ejecutar una consulta SQL.","Un método para borrar la base de datos."],2],
+[54,"B3","Room","¿Qué es Room Database?",["Un sistema de gestión de bases de datos relacionales.","Una biblioteca de persistencia de objetos en Android.","Una base de datos en memoria que se utiliza para pruebas en Android.","Un lenguaje de programación utilizado para el desarrollo de aplicaciones Android."],1],
+[55,"B3","Room","¿Cuáles son los componentes principales de Room Database?",["Entity, DAO y ViewModel.","Entity, DAO y Database.","Database, Repository y ViewModel.","Entity, Repository y Service."],1],
+[56,"B3","Room","¿Qué es un DAO en Room Database?",["Un objeto que representa una tabla en la base de datos.","Un objeto que se utiliza para realizar consultas a la base de datos.","Un objeto que se utiliza para acceder a los recursos de la aplicación.","Un objeto que se utiliza para enviar datos a través de una red."],1],
+[57,"B3","Room","¿Qué es un Entity en Room Database?",["Una clase que representa una tabla en la base de datos.","Una clase que se utiliza para realizar consultas a la base de datos.","Una clase que se utiliza para acceder a los recursos de la aplicación.","Una clase que se utiliza para enviar datos a través de una red."],0],
+[58,"B3","Room","¿Qué es la anotación @Database en Room Database?",["Una anotación que se utiliza para especificar una tabla en la base de datos.","Una anotación que se utiliza para especificar una columna en la tabla de la base de datos.","Una anotación que se utiliza para especificar la versión y los componentes de la base de datos.","Una anotación que se utiliza para definir una vista en la base de datos."],2],
+[59,"B3","Firebase","¿Qué es Firebase Realtime Database?",["Una base de datos relacional de código abierto.","Un servidor de base de datos en tiempo real.","Una biblioteca de gráficos para Android.","Una herramienta para depurar aplicaciones Android."],1],
+[60,"B3","Firebase","¿Cuál es el formato de los datos almacenados en Firebase Realtime Database?",["CSV","XML","JSON","TXT"],2],
+[61,"B3","Firebase","¿Cómo se estructuran los datos en Firebase Realtime Database?",["En tablas y columnas.","En colecciones y documentos.","En nodos y hojas.","En claves y valores."],2],
+[62,"B3","Firebase","¿Cómo se accede a los datos en Firebase Realtime Database?",["A través de una API REST.","A través de una API SOAP.","A través de una API GraphQL.","A través de una API JDBC."],0],
+[63,"B3","Firebase","¿Qué es Firebase Authentication?",["Un sistema de autenticación para Firebase Realtime Database.","Una base de datos en memoria que se utiliza para pruebas en Firebase.","Una herramienta para depurar aplicaciones Firebase.","Un servidor de autenticación para aplicaciones móviles."],3],
+[64,"B3","Firebase","¿Qué método se usa para obtener la instancia de Firebase Realtime Database?",["FirebaseDatabase.getRoot()","FirebaseDatabase.getInstance()","Firebase.connect()","FirebaseDatabase.init()"],1],
+[65,"B3","SQLite","¿Qué método crea las tablas al inicializar SQLiteOpenHelper?",["onUpgrade()","onCreate()","onOpen()","onInit()"],1],
+[66,"B3","SQLite","¿Qué método actualiza la estructura de la BBDD cuando la versión sube?",["onCreate()","onOpen()","onUpgrade()","onUpdate()"],2],
+[67,"B3","Firebase","¿En qué carpeta se coloca el archivo google-services.json de Firebase?",["En /res/raw/","En la carpeta app del proyecto","En /assets/","En el directorio raíz del proyecto"],1],
+[68,"B3","SQLite","¿Dónde se almacenan los archivos multimedia (sonidos, vídeos) para reproducir desde código?",["En /res/layout/","En /res/raw/","En /res/drawable/","En /assets/audio/"],1],
+[69,"B3","Room","¿Qué es AsyncTask en relación con bases de datos?",["Una clase para ejecutar consultas SQL directamente en el hilo principal.","Una clase para ejecutar operaciones pesadas (como consultas) en un hilo secundario y actualizar la UI al terminar.","Una clase específica de Room para consultas asíncronas.","Una clase de Firebase para sincronización de datos."],1]
+]},
+
+B4:{name:"B4 — Multimedia: Audio y vídeo",color:"#059669",n:28,
+qs:[
+[70,"B4","Audio","¿Qué es AudioTrack en Android?",["Una clase que permite reproducir audio en formato WAV (datos PCM ya decodificados).","Una clase que permite grabar audio en formato WAV.","Una clase que permite reproducir audio en formato MP1.","Una clase que permite grabar audio en formato MP1."],0],
+[71,"B4","Audio","¿Qué es SoundPool en Android?",["Una clase que permite grabar audio en formato WAV.","Una clase que permite reproducir audio en formato MP1.","Una clase que permite cargar y reproducir múltiples sonidos cortos simultáneamente.","Una clase que permite grabar audio en formato MP1."],2],
+[72,"B4","Audio","¿Qué es ToneGenerator en Android?",["Una clase que permite reproducir tonos de audio simples (pitidos, DTMF).","Una clase que permite grabar tonos de audio.","Una clase que permite reproducir archivos de audio en formato MP3.","Una clase que permite grabar archivos de audio en formato MP3."],0],
+[73,"B4","Audio","¿Cuál es la diferencia entre AudioTrack y SoundPool en Android?",["AudioTrack es más adecuado para reproducir sonidos largos; SoundPool para sonidos cortos.","AudioTrack es más adecuado para reproducir sonidos cortos; SoundPool para sonidos largos.","AudioTrack es para MP3; SoundPool es para WAV.","AudioTrack es para grabar audio; SoundPool es para reproducir audio."],0],
+[74,"B4","Audio","¿Qué es el método setVolume() en Android?",["Un método que establece el volumen de un archivo de audio.","Un método que establece el tono de un archivo de audio.","Un método que establece el balance de un archivo de audio.","Un método que establece la velocidad de reproducción de un archivo de audio."],0],
+[75,"B4","MediaPlayer","¿Qué es MediaPlayer en Android?",["Una clase que permite reproducir archivos de audio en formato MP3 (y muchos más formatos).","Una clase que permite grabar archivos de audio en formato MP3.","Una clase que permite reproducir archivos de audio en formato WAB.","Una clase que permite grabar archivos de audio en formato WAB."],0],
+[76,"B4","MediaPlayer","¿Cómo se crea un objeto MediaPlayer en Android?",["A través de la clase MediaRecorder.","A través de la clase AudioManager.","A través de la clase SoundPool.","A través de la clase MediaPlayer."],3],
+[77,"B4","MediaPlayer","¿Qué es el método setDataSource() en Android?",["Un método que establece el volumen de un archivo de audio.","Un método que establece la fuente de datos de un objeto MediaPlayer.","Un método que establece el tono de un archivo de audio.","Un método que establece el balance de un archivo de audio."],1],
+[78,"B4","MediaPlayer","¿Qué es el método prepare() en Android (MediaPlayer)?",["Un método que inicia la reproducción de un archivo de audio.","Un método que prepara un objeto MediaPlayer para su reproducción.","Un método que detiene la reproducción de un archivo de audio.","Un método que pausa la reproducción de un archivo de audio."],1],
+[79,"B4","MediaPlayer","¿Qué es el método setOnCompletionListener() en Android?",["Un método que establece un oyente para el final de la reproducción de un archivo de audio.","Un método que establece un oyente para la reproducción de un archivo de audio.","Un método que establece un oyente para el inicio de la reproducción de un archivo de audio.","Un método que establece un oyente para la pausa de la reproducción de un archivo de audio."],0],
+[80,"B4","ExoPlayer","¿Qué es ExoPlayer en Android?",["Un reproductor de audio y video de alta calidad con soporte para streaming (DASH, HLS).","Una librería para manipular archivos de audio en Android.","Una clase para crear efectos de sonido en Android.","Una librería para manipular archivos de video en Android."],0],
+[81,"B4","ExoPlayer","¿Cómo se crea un objeto ExoPlayer en Android?",["A través de la clase MediaPlayer.","A través de la clase SoundPool.","A través de la clase ExoPlayer.","A través de la clase MediaRecorder."],2],
+[82,"B4","ExoPlayer","¿Qué es el método prepare() en ExoPlayer?",["Un método que inicia la reproducción de un archivo de audio o video.","Un método que prepara un objeto ExoPlayer para su reproducción.","Un método que detiene la reproducción de un archivo de audio o video.","Un método que pausa la reproducción de un archivo de audio o video."],1],
+[83,"B4","Audio","¿Qué es VolumeShaper en Android?",["Una clase que permite crear efectos de sonido.","Una clase que permite manipular el volumen de un archivo de audio.","Una clase que permite manipular el tono de un archivo de audio.","Una clase que permite crear efectos de volumen (curvas de fade in/out)."],3],
+[84,"B4","Audio","¿Qué es el método addNode() en VolumeShaper?",["Un método que agrega un nodo de efecto de volumen a un objeto VolumeShaper.","Un método que agrega un nodo de efecto de sonido a un objeto VolumeShaper.","Un método que agrega un nodo de efecto de tono a un objeto VolumeShaper.","Un método que agrega un nodo de efecto de eco a un objeto VolumeShaper."],0],
+[85,"B4","RTP","¿Qué es RTP en Android?",["Un protocolo utilizado para la transmisión de video y audio en tiempo real.","Un protocolo utilizado para la transmisión de datos en tiempo real.","Un protocolo utilizado para la transmisión de archivos en tiempo real.","Un protocolo utilizado para la transmisión de texto en tiempo real."],0],
+[86,"B4","RTP","¿Qué significa RTP en inglés?",["Real-Time Protocol","Real-Time Player","Real-Time Program","Real-Time Producer"],0],
+[87,"B4","RTP","¿Qué es el paquete RTP en Android?",["Un paquete que contiene las clases necesarias para implementar el protocolo RTP en una aplicación Android.","Un paquete que contiene las clases necesarias para reproducir archivos de audio y video en una aplicación Android.","Un paquete que contiene las clases necesarias para grabar archivos de audio y video en una aplicación Android.","Un paquete que contiene las clases necesarias para procesar archivos de audio y video en una aplicación Android."],0],
+[88,"B4","RTP","¿Qué es el método setDataSource() en RTP?",["Un método que establece la fuente de datos para el paquete RTP.","Un método que establece la fuente de datos para un objeto MediaPlayer.","Un método que establece la fuente de datos para un objeto ExoPlayer.","Un método que establece la fuente de datos para un objeto AudioTrack."],0],
+[89,"B4","RTP","¿Qué es el método start() en RTP?",["Un método que inicia la transmisión de audio o video a través del protocolo RTP.","Un método que inicia la grabación de audio o video a través del protocolo RTP.","Un método que inicia la reproducción de audio o video a través del protocolo RTP.","Un método que inicia la transmisión de datos a través del protocolo RTP."],0],
+[90,"B4","Multimedia","¿Qué son los servicios multimedia en Android?",["Servicios que permiten la reproducción y grabación de audio y video en segundo plano.","Servicios que permiten el procesamiento de imágenes y videos en segundo plano.","Servicios que permiten la edición de audio y video en segundo plano.","Servicios que permiten la descarga de archivos multimedia en segundo plano."],0],
+[91,"B4","Multimedia","¿Qué es MediaRecorder en Android?",["Una clase que permite reproducir archivos de audio y video.","Una clase que permite grabar archivos de audio y video.","Una clase que permite procesar archivos de audio y video.","Una clase que permite editar archivos de audio y video."],1],
+[92,"B4","Multimedia","¿Qué es SurfaceView en Android?",["Una vista que permite la reproducción de archivos de audio y video de forma eficiente.","Una vista que permite la grabación de archivos de audio y video.","Una vista que permite la edición de archivos de audio y video.","Una vista que permite el procesamiento de archivos de audio y video."],0],
+[93,"B4","Multimedia","¿Qué es el método setVideoSource() en MediaRecorder?",["Un método que establece la fuente de video para la grabación.","Un método que establece la fuente de video para la reproducción.","Un método que establece la fuente de audio para la grabación.","Un método que establece la fuente de audio para la reproducción."],0],
+[94,"B4","Audio","¿Qué es la clase SoundPool en Android Studio?",["Una clase que permite la reproducción de archivos de audio en segundo plano.","Una clase que permite la grabación de archivos de audio en segundo plano.","Una clase que permite el procesamiento de archivos de audio en segundo plano.","Una clase que permite cargar y reproducir archivos de audio cortos."],3],
+[95,"B4","Audio","¿Qué es la clase VolumeShaper en Android Studio?",["Una clase que permite la grabación de archivos de audio.","Una clase que permite la reproducción de archivos de audio.","Una clase que permite definir curvas de volumen para la reproducción de audio.","Una clase que permite definir curvas de volumen para la grabación de audio."],2],
+[96,"B4","Multimedia","¿Qué es la clase MediaMetadataRetriever en Android Studio?",["Una clase que permite la grabación de archivos de audio y video.","Una clase que permite la reproducción de archivos de audio y video.","Una clase que permite la edición de archivos de audio y video.","Una clase que permite obtener metadatos de archivos de audio y video."],3],
+[97,"B4","Audio","¿Qué es la clase AudioAttributes en Android Studio?",["Una clase que permite la definición de los atributos de reproducción de audio.","Una clase que permite la definición de los atributos de grabación de audio.","Una clase que permite la definición de los atributos de procesamiento de audio.","Una clase que permite la definición de los atributos de edición de audio."],0]
+]},
+
+B5:{name:"B5 — Multimedia: Permisos y sensores",color:"#dc2626",n:27,
+qs:[
+[98,"B5","Permisos","¿Qué es el permiso android.permission.CAMERA en Android?",["Un permiso para acceder a la cámara del dispositivo.","Un permiso para acceder al micrófono del dispositivo.","Un permiso para acceder al GPS del dispositivo.","Un permiso para acceder a la tarjeta SD del dispositivo."],0],
+[99,"B5","Permisos","¿Qué es el permiso android.permission.RECORD_AUDIO en Android?",["Un permiso para acceder a la cámara del dispositivo.","Un permiso para acceder al micrófono del dispositivo.","Un permiso para acceder al GPS del dispositivo.","Un permiso para acceder a la tarjeta SD del dispositivo."],1],
+[100,"B5","Permisos","¿Qué es el permiso android.permission.ACCESS_FINE_LOCATION en Android?",["Un permiso para acceder a la cámara del dispositivo.","Un permiso para acceder al micrófono del dispositivo.","Un permiso para acceder al GPS del dispositivo.","Un permiso para acceder a la tarjeta SD del dispositivo."],2],
+[101,"B5","Permisos","¿Qué permiso se necesita para el almacenamiento externo?",["No necesitamos ningún permiso.","WRITE_EXTERNAL_STORAGE.","WRITE_INTERNAL_STORAGE.","WRITE_STORAGE."],1],
+[102,"B5","Permisos","¿Qué es el permiso de cámara en Android?",["Un permiso que permite a una aplicación acceder a la cámara del dispositivo.","Un permiso que permite a una aplicación acceder a los archivos de audio del dispositivo.","Un permiso que permite a una aplicación acceder a la ubicación del dispositivo.","Un permiso que permite a una aplicación acceder a los contactos del dispositivo."],0],
+[103,"B5","Permisos","¿Qué es el permiso de grabación de audio en Android?",["Un permiso que permite a una aplicación acceder a la grabadora de audio del dispositivo.","Un permiso que permite a una aplicación acceder a la cámara del dispositivo.","Un permiso que permite a una aplicación acceder a la ubicación del dispositivo.","Un permiso que permite a una aplicación acceder a los contactos del dispositivo."],0],
+[104,"B5","Permisos","¿Qué es el permiso de GPS en Android?",["Un permiso que permite a una aplicación acceder a la ubicación del dispositivo.","Un permiso que permite a una aplicación acceder a los archivos de audio del dispositivo.","Un permiso que permite a una aplicación acceder a la cámara del dispositivo.","Un permiso que permite a una aplicación acceder a los contactos del dispositivo."],0],
+[105,"B5","Permisos","¿Cuál es el permiso correcto para leer SMS?",["android.permission.SMS","android.permission.READ","android.permission.READSMS","android.permission.READ_SMS"],3],
+[106,"B5","Permisos","¿Cuál es el permiso para grabar audio?",["android.permission.MICROPHONE","android.permission.RECORD","android.permission.RECORD_AUDIO","android.permission.RECORD_CALL"],2],
+[107,"B5","Permisos","¿Dónde se declaran los permisos en Android?",["En el archivo build.gradle.","En el archivo strings.xml.","En el AndroidManifest.xml.","En el código Java/Kotlin directamente."],2],
+[108,"B5","Cámara","¿Cuál es la forma correcta de acceder a la cámara en Android Studio mediante código Kotlin?",["Usando la clase CameraManager","Usando la clase Camera","Usando la clase Camera2","Usando la clase CameraX"],3],
+[109,"B5","Cámara","¿Qué API de cámara está deprecada y no debe usarse en apps nuevas?",["Camera2","CameraX","CameraManager","Camera (sin número)"],3],
+[110,"B5","GPS","¿Cómo se puede acceder al GPS del dispositivo en Android mediante código Kotlin?",["Usando la clase LocationManager","Usando la clase Location","Usando la clase FusedLocationProviderClient","Usando la clase LocationListener"],2],
+[111,"B5","GPS","¿Qué clase es la recomendada actualmente para acceder al GPS en Android?",["LocationManager","Location","LocationListener","FusedLocationProviderClient"],3],
+[112,"B5","Audio","¿Cómo se puede grabar audio en segundo plano en Android mediante código Kotlin?",["Usando la clase MediaRecorder","Usando la clase AudioRecord","Usando la clase SoundPool","Usando la clase ToneGenerator"],1],
+[113,"B5","Audio","¿Qué es la librería ExoPlayer en Android Studio?",["Una librería que permite la reproducción de archivos de audio y video.","Una librería que permite la grabación de archivos de audio y video.","Una librería que permite la edición de archivos de audio y video.","Una librería que permite el procesamiento de archivos de audio y video."],0],
+[114,"B5","Multimedia","¿Qué es la clase SurfaceHolder.Callback en Android Studio?",["Una clase que permite la gestión de la vista SurfaceView.","Una clase que permite la gestión de la reproducción de video en segundo plano.","Una clase que permite la gestión de la grabación de audio en segundo plano.","Una clase que permite la gestión de la grabación de video en segundo plano."],0],
+[115,"B5","Multimedia","¿Qué es AsyncPlayer en Android?",["Reproduce audio en el hilo principal de la aplicación.","Reproduce audio en una hebra secundaria (hilo de fondo).","Graba audio en una hebra secundaria.","Graba audio en el hilo principal."],1],
+[116,"B5","Multimedia","¿Qué hace MediaPlayer en Android?",["REPRODUCE audio Y vídeo en múltiples formatos.","Solo graba audio.","Solo procesa señales de audio.","Solo reproduce audio, no vídeo."],0],
+[117,"B5","Multimedia","¿Para qué se usa AudioTrack principalmente?",["Reproducción de audio de bajo nivel con datos PCM ya decodificados.","Reproducción de múltiples efectos de sonido cortos con prioridades.","Generación de tonos simples de pitido.","Grabación de audio en formato MP3."],0],
+[118,"B5","Multimedia","¿Para qué se recomienda SoundPool?",["Streaming de vídeo de alta calidad.","Reproducción de múltiples efectos de sonido cortos simultáneos con baja latencia.","Generación de tonos DTMF del teléfono.","Grabación de audio en segundo plano."],1],
+[119,"B5","Multimedia","¿Para qué se usa ExoPlayer principalmente?",["Grabación de audio de alta calidad.","Reproducción de streaming avanzado (DASH, HLS) y contenido DRM.","Generación de tonos simples.","Reproducción de efectos de sonido cortos."],1],
+[120,"B5","Multimedia","¿Qué hace el método prepare() de MediaPlayer?",["Inicia la reproducción inmediatamente.","Prepara el MediaPlayer para la reproducción antes de llamar a start().","Detiene la reproducción.","Configura el volumen."],1],
+[121,"B5","Multimedia","¿Qué hace setOnCompletionListener()?",["Escucha cuando el audio se pausa.","Escucha cuando el audio termina de reproducirse completamente.","Escucha cuando el audio empieza.","Configura el listener de errores."],1],
+[122,"B5","Multimedia","¿Para qué sirve SurfaceView?",["Para editar vídeo.","Para mostrar vídeo de forma eficiente sin bloquear el hilo principal.","Para grabar vídeo.","Para procesar el audio de vídeos."],1],
+[123,"B5","Multimedia","¿Qué hace MediaMetadataRetriever?",["Reproduce archivos multimedia.","Graba archivos multimedia.","Obtiene metadatos (título, artista, duración...) de archivos multimedia.","Edita archivos multimedia."],2],
+[124,"B5","Multimedia","¿Qué hace AudioAttributes?",["Define los atributos de grabación de audio.","Define los atributos de reproducción de audio (tipo de uso y tipo de contenido).","Define los atributos de edición de audio.","Define los atributos de procesamiento de audio."],1]
+]},
+
+B6:{name:"B6 — Motores gráficos: Conceptos base",color:"#9333ea",n:40,
+qs:[
+[125,"B6","Motores","¿Qué es un motor gráfico?",["Un software que se utiliza para diseñar modelos 3D.","Un software que se utiliza para animar personajes 3D.","Un software que se utiliza para renderizar gráficos 3D en tiempo real.","Un software que se utiliza para generar efectos visuales en juegos."],2],
+[126,"B6","Motores","¿Cuál de los siguientes motores gráficos es más utilizado para el desarrollo de videojuegos en 2D?",["Unity","Unreal Engine","Godot Engine","Construct"],3],
+[127,"B6","Shaders","¿Qué es el shader en los motores gráficos?",["Un programa que se ejecuta en la GPU para procesar los gráficos en tiempo real.","Un modelo que se utiliza para diseñar los objetos 3D en un motor gráfico.","Un archivo de configuración que se utiliza para definir las propiedades de los gráficos.","Un efecto visual que se aplica a los gráficos en tiempo real."],0],
+[128,"B6","Motores","¿Cuál es la función principal de un motor gráfico en el desarrollo de videojuegos?",["Generar los gráficos y efectos visuales del juego.","Programar la lógica y la mecánica del juego.","Diseñar los niveles y la historia del juego.","Gestionar la inteligencia artificial del juego."],0],
+[129,"B6","Motores","¿Cuál es uno de los principales motores gráficos utilizados para el desarrollo de videojuegos en realidad virtual?",["Unity","Unreal Engine","Godot Engine","Construct"],1],
+[130,"B6","Unity","¿Qué es un sprite en el desarrollo de videojuegos?",["Una imagen que se utiliza para diseñar los personajes y objetos en un videojuego.","Un programa que se utiliza para diseñar los niveles y la mecánica de un videojuego.","Un objeto que se utiliza para controlar la interacción del usuario con el videojuego.","Una secuencia de imágenes que se utiliza para simular el movimiento en un videojuego."],0],
+[131,"B6","Unity","¿Qué es un canvas en Unity?",["Un objeto que se utiliza para reproducir audio en una escena.","Un objeto que se utiliza para contener y organizar la interfaz de usuario en una escena.","Un objeto que se utiliza para modelar y animar personajes y objetos en una escena.","Un objeto que se utiliza para generar partículas y efectos visuales en una escena."],1],
+[132,"B6","Unity","¿Qué es un animator en Unity?",["Un componente que se utiliza para crear animaciones de personajes y objetos en una escena.","Un objeto que se utiliza para crear efectos visuales y partículas en una escena.","Un componente que se utiliza para gestionar el audio en una escena.","Un objeto que se utiliza para la detección de colisiones y físicas en una escena."],0],
+[133,"B6","Unity","¿Qué es un animation controller en Unity?",["Un componente que se utiliza para gestionar las animaciones de los objetos en una escena.","Un objeto que se utiliza para la generación de terrenos y paisajes en una escena.","Un objeto que se utiliza para la gestión de la iluminación en una escena.","Un componente que se utiliza para la gestión del audio en una escena."],0],
+[134,"B6","Unity","¿Qué es un timeline en Unity?",["Un componente que se utiliza para gestionar las animaciones de los objetos en una escena.","Un objeto que se utiliza para la generación de terrenos y paisajes en una escena.","Un objeto que se utiliza para la gestión de la iluminación en una escena.","Un componente que se utiliza para la gestión del audio en una escena."],0],
+[135,"B6","Unity","¿Qué es un blend tree en Unity?",["Un objeto que se utiliza para mezclar diferentes animaciones de personajes en una escena.","Un objeto que se utiliza para crear efectos visuales y partículas en una escena.","Un componente que se utiliza para gestionar el audio en una escena.","Un componente que se utiliza para la gestión de la iluminación en una escena."],0],
+[136,"B6","OpenGL","¿Qué es OpenGL?",["Un lenguaje de programación utilizado para el desarrollo de aplicaciones móviles en Android.","Un software que se utiliza para el diseño de interfaces de usuario en Windows.","Una biblioteca de gráficos en 2D y 3D utilizada para el desarrollo de videojuegos y aplicaciones.","Un framework utilizado para la gestión de bases de datos relacionales."],2],
+[137,"B6","OpenGL","¿Qué tipo de gráficos se pueden generar con OpenGL?",["Gráficos en 2D únicamente.","Gráficos en 3D únicamente.","Tanto gráficos en 2D como en 3D.","Ninguna de las anteriores."],2],
+[138,"B6","OpenGL","¿Qué es una textura en OpenGL?",["Una imagen que se utiliza para el fondo de pantalla de una aplicación.","Una imagen que se utiliza para la creación de animaciones en una aplicación.","Una imagen que se utiliza para el diseño de interfaces de usuario en una aplicación.","Una imagen que se aplica a la superficie de un objeto 3D para darle color y detalle."],3],
+[139,"B6","OpenGL","¿Qué es una malla en OpenGL?",["Un objeto que se utiliza para la representación de gráficos en 2D en una aplicación.","Un objeto que se utiliza para la representación de gráficos en 3D en una aplicación.","Una imagen que se utiliza para la creación de animaciones en una aplicación.","Una imagen que se utiliza para el diseño de interfaces de usuario en una aplicación."],1],
+[140,"B6","OpenGL","¿Qué es un shader en OpenGL?",["Un objeto que se utiliza para la gestión de la iluminación en una escena.","Un objeto que se utiliza para la creación de efectos visuales y partículas en una aplicación.","Un programa que se utiliza para procesar los gráficos en una aplicación (se ejecuta en la GPU).","Una imagen que se utiliza para añadir detalles y realismo a los objetos en una escena 3D."],2],
+[141,"B6","OpenGL","¿Qué es OpenGL (definición alternativa)?",["Es una biblioteca gráfica multiplataforma para el desarrollo de juegos y aplicaciones en 2D y 3D.","Es un motor de renderizado para la creación de efectos visuales en tiempo real.","Es un lenguaje de programación utilizado para la creación de gráficos en alta definición.","Ninguna de las anteriores es correcta."],0],
+[142,"B6","OpenGL","¿Qué son las VBOs en OpenGL?",["Son objetos que almacenan los datos de vértices de un objeto 3D en la memoria de la GPU.","Son objetos que almacenan los datos de vértices de un objeto 2D en la memoria de la GPU.","Son objetos que almacenan los datos de texturas de un objeto 3D en la memoria de la GPU.","Ninguna de las anteriores es correcta."],0],
+[143,"B6","OpenGL","¿Qué es el rendering pipeline en OpenGL?",["Es el proceso que sigue OpenGL para cargar y almacenar datos de objetos en la memoria de la GPU.","Es el proceso que sigue OpenGL para procesar y mostrar gráficos en la pantalla.","Es el proceso que sigue OpenGL para procesar y almacenar texturas en la memoria de la GPU.","Ninguna de las anteriores es correcta."],1],
+[144,"B6","OpenGL","¿Qué es una textura en OpenGL (definición alternativa)?",["Es una imagen que se utiliza para almacenar los datos de vértices de un objeto en la memoria de la GPU.","Es una imagen que se aplica a la superficie de un objeto 2D para darle color y detalle.","Es una imagen que se aplica a la superficie de un objeto 3D para darle color y detalle.","Ninguna de las anteriores es correcta."],2],
+[145,"B6","DirectX","¿Qué es DirectX?",["Un motor de renderizado utilizado para crear gráficos en tiempo real.","Una biblioteca de gráficos multiplataforma utilizada para crear videojuegos y aplicaciones multimedia.","Un lenguaje de programación utilizado para crear gráficos en alta definición.","Ninguna de las anteriores es correcta."],1],
+[146,"B6","DirectX","¿Cuál es la función principal de Direct3D?",["Renderizar gráficos en 3D en tiempo real.","Procesar efectos visuales en tiempo real.","Reproducir sonido y música en tiempo real.","Ninguna de las anteriores es correcta."],0],
+[147,"B6","DirectX","¿Qué es un shader en DirectX?",["Un programa que se ejecuta en la GPU para procesar los gráficos de un objeto.","Un programa que se ejecuta en la CPU para procesar los gráficos de un objeto.","Una biblioteca que contiene funciones para procesar los gráficos de un objeto.","Ninguna de las anteriores es correcta."],0],
+[148,"B6","DirectX","¿Qué son los Vertex Buffers en DirectX?",["Ninguna de las siguientes es correcta.","Son objetos que almacenan los datos de vértices de un objeto 2D en la memoria de la GPU.","Son objetos que almacenan los datos de texturas de un objeto 3D en la memoria de la GPU.","Son objetos que almacenan los datos de vértices de un objeto 3D en la memoria de la GPU."],3],
+[149,"B6","DirectX","¿Qué es el Direct Sound en DirectX?",["Una biblioteca de gráficos multiplataforma utilizada para crear videojuegos y aplicaciones multimedia.","Un motor de renderizado utilizado para crear efectos visuales en tiempo real.","Una biblioteca que se utiliza para reproducir sonido y música en tiempo real.","Ninguna de las anteriores es correcta."],2],
+[150,"B6","Unity","¿Qué es un Sprite 2D en Unity?",["Un objeto que se utiliza para la representación de gráficos en 3D en una escena.","Un objeto que se utiliza para la representación de gráficos en 2D en una escena.","Una imagen que se utiliza para la creación de efectos visuales y partículas en una escena.","Un objeto que se utiliza para la detección de colisiones y físicas en una escena."],1],
+[151,"B6","Unity","¿Qué es un atlas de sprites en Unity?",["Un objeto que se utiliza para la creación de efectos visuales y partículas en una escena.","Una imagen que contiene múltiples sprites 2D para su uso en una escena.","Un objeto que se utiliza para la representación de gráficos en 3D en una escena.","Un objeto que se utiliza para la representación de gráficos en 2D en una escena."],1],
+[152,"B6","Unity","¿Cómo se puede animar un Sprite 2D en Unity?",["Mediante la utilización de un animator.","Mediante la utilización de un canvas.","Mediante la utilización de un blend tree.","Mediante la utilización de un animation controller."],0],
+[153,"B6","Unity","¿Qué es un sprite renderer en Unity?",["Un componente que se utiliza para la representación de gráficos en 3D en una escena.","Un objeto que se utiliza para la detección de colisiones y físicas en una escena.","Un objeto que se utiliza para la generación de terrenos y paisajes en una escena.","Un componente que se utiliza para la representación de sprites 2D en una escena."],3],
+[154,"B6","Unity","¿Cómo se puede cambiar la textura de un sprite 2D en Unity?",["Mediante la utilización de un atlas de sprites.","Mediante la utilización de un animator.","Mediante la utilización de un sprite renderer.","Mediante la utilización de un blend tree."],2],
+[155,"B6","Renderizado","¿Qué es un motor de renderizado?",["Un software que se utiliza para la creación de interfaces de usuario en Windows.","Un software que se utiliza para la edición de vídeo en macOS.","Un software que se utiliza para la generación de gráficos en 3D en videojuegos y aplicaciones.","Un software que se utiliza para la gestión de bases de datos relacionales."],2],
+[156,"B6","Renderizado","¿Qué es la iluminación en un motor de renderizado?",["Un efecto visual que se utiliza para añadir realismo a los objetos en una escena.","Un efecto visual que se utiliza para la creación de partículas en una escena.","Un efecto visual que se utiliza para la detección de colisiones y físicas en una escena.","Un efecto visual que se utiliza para la creación de efectos de sonido en una escena."],0],
+[157,"B6","Renderizado","¿Qué es una sombra en un motor de renderizado?",["Un efecto visual que se utiliza para añadir realismo a los objetos en una escena.","Un efecto visual que se utiliza para la creación de partículas en una escena.","Un efecto visual que se utiliza para la detección de colisiones y físicas en una escena.","Un efecto visual que se utiliza para la creación de efectos de sonido en una escena."],0],
+[158,"B6","Renderizado","¿Qué es el antialiasing en un motor de renderizado?",["Un efecto visual que se utiliza para reducir el efecto de escalonamiento en los bordes de los objetos en una escena.","Un efecto visual que se utiliza para la creación de partículas en una escena.","Un efecto visual que se utiliza para la detección de colisiones y físicas en una escena.","Un efecto visual que se utiliza para la creación de efectos de sonido en una escena."],0],
+[159,"B6","Renderizado","¿Qué es el postprocesado en un motor de renderizado?",["Una técnica que se utiliza para aplicar efectos visuales a la escena después de la renderización.","Una técnica que se utiliza para la detección de colisiones y físicas en la escena.","Una técnica que se utiliza para la creación de partículas en la escena.","Una técnica que se utiliza para la gestión de bases de datos relacionales."],0],
+[160,"B6","OpenGL","¿Qué es OpenGL (como biblioteca gráfica multiplataforma)?",["Es una biblioteca gráfica multiplataforma para el desarrollo de juegos y aplicaciones en 2D y 3D.","Es un motor de renderizado para la creación de efectos visuales en tiempo real.","Es un lenguaje de programación utilizado para la creación de gráficos en alta definición.","Ninguna de las anteriores es correcta."],0],
+[161,"B6","OpenGL","¿Qué son las VBOs en OpenGL?",["Son objetos que almacenan los datos de vértices de un objeto 3D en la memoria de la GPU.","Son objetos que almacenan los datos de vértices de un objeto 2D en la memoria de la GPU.","Son objetos que almacenan los datos de texturas de un objeto 3D en la memoria de la GPU.","Ninguna de las anteriores es correcta."],0],
+[162,"B6","OpenGL","¿Qué es el rendering pipeline en OpenGL?",["Es el proceso que sigue OpenGL para cargar y almacenar datos de objetos en la memoria de la GPU.","Es el proceso que sigue OpenGL para procesar y mostrar gráficos en la pantalla.","Es el proceso que sigue OpenGL para procesar y almacenar texturas en la memoria de la GPU.","Ninguna de las anteriores es correcta."],1],
+[163,"B6","DirectX","¿Qué es DirectX?",["Un motor de renderizado utilizado para crear gráficos en tiempo real.","Una biblioteca de gráficos multiplataforma utilizada para crear videojuegos y aplicaciones multimedia.","Un lenguaje de programación utilizado para crear gráficos en alta definición.","Ninguna de las anteriores es correcta."],1],
+[164,"B6","DirectX","¿Qué es el Direct Sound en DirectX?",["Una biblioteca de gráficos multiplataforma utilizada para crear videojuegos y aplicaciones multimedia.","Un motor de renderizado utilizado para crear efectos visuales en tiempo real.","Una biblioteca que se utiliza para reproducir sonido y música en tiempo real.","Ninguna de las anteriores es correcta."],2]
+]},
+
+B7:{name:"B7 — Motores gráficos: Física y código",color:"#0f766e",n:30,
+qs:[
+[160,"B7","Física","¿Qué es el motor físico en Unity?",["Un software que se utiliza para la creación de interfaces de usuario en Windows.","Un software que se utiliza para la edición de vídeo en macOS.","Un software que se utiliza para la simulación de física en objetos en un videojuego o aplicación.","Un software que se utiliza para la gestión de bases de datos relacionales."],2],
+[161,"B7","Física","¿Qué es un rigidbody en Unity?",["Un objeto que se utiliza para la representación de gráficos en 3D en una escena.","Un objeto que se utiliza para la representación de gráficos en 2D en una escena.","Un componente que se utiliza para la simulación de física en objetos en un videojuego o aplicación.","Un componente que se utiliza para la generación de terrenos y paisajes en una escena."],2],
+[162,"B7","Física","¿Cómo se puede simular la gravedad en Unity?",["Mediante la utilización de un animator.","Mediante la utilización de un blend tree.","Mediante la utilización de un rigidbody con la propiedad 'Use Gravity'.","Mediante la utilización de un sprite renderer."],2],
+[163,"B7","Física","¿Qué es una colisión en Unity?",["Una interacción entre dos objetos que se encuentran en una misma posición en la escena.","Una interacción entre dos objetos que se encuentran en posiciones cercanas en la escena.","Una interacción entre dos objetos que se mueven a velocidades similares en la escena.","Una interacción entre dos objetos que tienen formas y tamaños que se superponen en la escena."],3],
+[164,"B7","Física","¿Qué es la simulación de partículas en Unity?",["Una técnica que se utiliza para la simulación de objetos en movimiento en la escena.","Una técnica que se utiliza para la simulación de fluidos en la escena.","Una técnica que se utiliza para la simulación de fuego y explosiones en la escena.","Una técnica que se utiliza para la simulación de la iluminación en la escena."],2],
+[165,"B7","Unity","¿Qué son los assets en Unity?",["Los gráficos en 2D utilizados en un videojuego.","Los gráficos en 3D utilizados en un videojuego.","Los objetos, modelos, materiales y recursos utilizados en un videojuego.","Las animaciones utilizadas en un videojuego."],2],
+[166,"B7","Renderizado","¿Qué es un shader en Unity?",["Un programa que se utiliza para generar gráficos en 2D.","Un programa que se utiliza para generar gráficos en 3D.","Un programa que se utiliza para crear efectos visuales y materiales en Unity.","Un programa que se utiliza para la simulación de física en Unity."],2],
+[167,"B7","Renderizado","¿Cómo se puede optimizar el renderizado en Unity?",["Limitando el número de polígonos en los modelos utilizados en el videojuego.","Limitando el número de objetos en la escena.","Utilizando la técnica de culling para evitar renderizar objetos que no están en la vista del jugador.","Todas las anteriores."],3],
+[168,"B7","Renderizado","¿Qué es un LOD en Unity?",["Una técnica utilizada para la simulación de partículas en la escena.","Una técnica utilizada para la simulación de fluidos en la escena.","Una técnica utilizada para la generación de terrenos en la escena.","Una técnica utilizada para optimizar el renderizado al utilizar modelos menos detallados en distancias lejanas."],3],
+[169,"B7","Unity","¿Qué es un AudioSource en Unity?",["Un componente que se utiliza para la representación de gráficos en 2D en una escena.","Un componente que se utiliza para la representación de gráficos en 3D en una escena.","Un componente que se utiliza para la reproducción de sonidos en un videojuego.","Un componente que se utiliza para la simulación de física en objetos en un videojuego o aplicación."],2],
+[170,"B7","Unity","¿Qué es un AudioListener en Unity?",["Un componente que se utiliza para la representación de gráficos en 2D en una escena.","Un componente que se utiliza para la representación de gráficos en 3D en una escena.","Un componente que se utiliza para la captura del audio en un videojuego.","Un componente que se utiliza para la simulación de física en objetos en un videojuego o aplicación."],2],
+[171,"B7","IA","¿Qué es la inteligencia artificial en Unity?",["Una técnica que se utiliza para la representación de gráficos en 2D en una escena.","Una técnica que se utiliza para la representación de gráficos en 3D en una escena.","Una técnica que se utiliza para la simulación de comportamientos inteligentes en personajes o enemigos en un videojuego.","Una técnica que se utiliza para la generación de sonidos en un videojuego."],2],
+[172,"B7","IA","¿Qué es el pathfinding en Unity?",["Una técnica que se utiliza para la simulación de física en objetos en un videojuego o aplicación.","Una técnica que se utiliza para la generación de terrenos y paisajes en una escena.","Una técnica que se utiliza para la simulación de comportamientos inteligentes en personajes o enemigos en un videojuego.","Una técnica que se utiliza para la captura del audio en un videojuego."],2],
+[173,"B7","Audio","¿Qué es el reverb en Unity?",["Una técnica que se utiliza para la simulación de sonidos en un espacio cerrado en un videojuego.","Una técnica que se utiliza para la simulación de sonidos en un espacio abierto en un videojuego.","Una técnica que se utiliza para la generación de partículas en un videojuego.","Una técnica que se utiliza para la generación de luces y sombras en un videojuego."],0],
+[174,"B7","Colisiones","¿Qué es un colisionador en Unity?",["Un componente que se utiliza para la representación de gráficos en 2D en una escena.","Un componente que se utiliza para la representación de gráficos en 3D en una escena.","Un componente que se utiliza para detectar las colisiones entre objetos en un videojuego.","Un componente que se utiliza para la simulación de física en objetos en un videojuego o aplicación."],2],
+[175,"B7","Colisiones","¿Cómo se puede detectar una colisión en Unity?",["Utilizando el método OnCollisionEnter.","Utilizando el método OnTriggerEnter.","Utilizando el método OnCollisionStay.","Todas las anteriores."],3],
+[176,"B7","Colisiones","¿Qué es un trigger en Unity?",["Un componente que se utiliza para la simulación de sonidos en un videojuego.","Un componente que se utiliza para detectar la colisión entre objetos en un videojuego sin aplicar fuerzas físicas.","Un componente que se utiliza para la simulación de partículas en un videojuego.","Un componente que se utiliza para la simulación de fluidos en un videojuego."],1],
+[177,"B7","Colisiones","¿Qué es la detección de colisiones por capas en Unity?",["Una técnica que se utiliza para la simulación de física en objetos en un videojuego o aplicación.","Una técnica que se utiliza para limitar la detección de colisiones entre objetos de determinadas capas en Unity.","Una técnica que se utiliza para la representación de gráficos en 2D en una escena.","Una técnica que se utiliza para la representación de gráficos en 3D en una escena."],1],
+[178,"B7","Colisiones","¿Qué es un raycast en Unity?",["Una técnica que se utiliza para la simulación de sonidos en un videojuego.","Una técnica que se utiliza para la simulación de comportamientos inteligentes en personajes o enemigos en un videojuego.","Una técnica que se utiliza para detectar la colisión entre objetos en un videojuego sin aplicar fuerzas físicas.","Una técnica que se utiliza para detectar si un rayo intersecta con un objeto en la escena de Unity."],3],
+[179,"B7","Colisiones","¿Qué es un Box Collider en Unity?",["Un colisionador que define una forma rectangular en 3D.","Un colisionador que define una forma esférica en 3D.","Un colisionador que define una forma cilíndrica en 3D.","Un colisionador que define una forma trapezoidal en 3D."],0],
+[180,"B7","Colisiones","¿Qué es un Sphere Collider en Unity?",["Un colisionador que define una forma rectangular en 3D.","Un colisionador que define una forma esférica en 3D.","Un colisionador que define una forma cilíndrica en 3D.","Un colisionador que define una forma trapezoidal en 3D."],1],
+[181,"B7","Colisiones","¿Qué es un Capsule Collider en Unity?",["Un colisionador que define una forma rectangular en 3D.","Un colisionador que define una forma esférica en 3D.","Un colisionador que define una forma cilíndrica en 3D.","Un colisionador que define una forma trapezoidal en 3D."],2],
+[182,"B7","Colisiones","¿Qué es un Mesh Collider en Unity?",["Un colisionador que define una forma rectangular en 3D.","Un colisionador que define una forma esférica en 3D.","Un colisionador que utiliza una malla personalizada para definir la forma de colisión en un objeto.","Un colisionador que define una forma trapezoidal en 3D."],2],
+[183,"B7","Colisiones","¿Qué es un Terrain Collider en Unity?",["Un colisionador que define una forma rectangular en 3D.","Un colisionador que define una forma esférica en 3D.","Un colisionador que utiliza una malla personalizada para definir la forma de colisión en un objeto.","Un colisionador que se utiliza para terrenos y paisajes en Unity."],3],
+[184,"B7","CharController","¿Qué es un Character Controller en Unity?",["Un componente que se utiliza para controlar la animación de personajes en un videojuego.","Un componente que se utiliza para el movimiento y control de personajes en un videojuego en 3D.","Un componente que se utiliza para la simulación de física en objetos en un videojuego.","Un componente que se utiliza para la simulación de sonidos en un videojuego."],1],
+[185,"B7","CharController","¿Qué método se utiliza para mover al personaje controlado por Character Controller en C# en Unity?",["Move()","Update()","FixedUpdate()","LateUpdate()"],0],
+[186,"B7","CharController","¿Cuál es el propósito de la propiedad isGrounded en el componente Character Controller en C# en Unity?",["Indica si el personaje está saltando.","Indica si el personaje está tocando el suelo.","Indica si el personaje está en movimiento.","Ninguna de las anteriores es correcta."],1],
+[187,"B7","Patrones","¿Qué es el patrón de diseño MVC y cómo se aplica en Unity?",["Es un patrón de diseño que se basa en la separación de la lógica de la vista y el controlador.","Es un patrón de diseño que se basa en la interacción de los objetos de juego en una jerarquía de objetos.","Es un patrón de diseño que se basa en la separación de la lógica de la IA y la física del juego.","Ninguna de las anteriores es correcta."],0],
+[188,"B7","Historia","¿Por qué se considera que Tennis for Two fue el primer videojuego de la historia?",["Fue el primer juego que se jugó en una computadora.","Fue el primer juego que se vendió en una tienda.","Fue el primer juego en utilizar gráficos en tiempo real.","Fue el primer juego en permitir el juego multijugador."],2],
+[189,"B7","Historia","¿Cuál fue el primer juego de arcade exitoso en la historia de los videojuegos?",["Pong","Space Invaders","Pac-Man","Donkey Kong"],1]
+]}
+};
+
+// Mapa global id -> pregunta
+var Q_MAP = {};
+Object.keys(BLOCKS).forEach(function(bk){
+  BLOCKS[bk].qs.forEach(function(q){ Q_MAP[q[0]] = q; });
+});
+
+// ═══════════ ESTADO ═══════════
+var SKEY = "campus_dam_v2";
+var ST;
+function loadST(){
+  try{ ST = JSON.parse(localStorage.getItem(SKEY))||{}; }catch(e){ ST={}; }
+  if(!ST.r) ST.r={};   // results: id -> "ok"|"bad"
+  if(!ST.bank) ST.bank={};  // id -> true
+  if(!ST.dom) ST.dom={};    // id -> true
+}
+function saveST(){ try{ localStorage.setItem(SKEY,JSON.stringify(ST)); }catch(e){} }
+function addBank(id){ if(!ST.dom[id]) ST.bank[id]=true; }
+function rmBank(id){ delete ST.bank[id]; }
+
+// ═══════════ QUIZ STATE ═══════════
+var QZ = { bk:"", queue:[], idx:0, done:false, sess:{} };
+
+function startBlock(bk){
+  var B = BLOCKS[bk];
+  QZ.bk=bk; QZ.queue=B.qs.slice(); QZ.idx=0; QZ.done=false; QZ.sess={};
+  document.getElementById("qtitle").textContent = B.name;
+  document.getElementById("qtop").style.background = B.color;
+  document.getElementById("qprogfill").style.background = B.color;
+  document.getElementById("bdom").style.display="none";
+  showQ();
+  renderQ();
+}
+
+function startBank(){
+  var ids = Object.keys(ST.bank);
+  if(!ids.length){ alert("No hay preguntas en el banco de repaso."); return; }
+  QZ.bk="BANK"; QZ.idx=0; QZ.done=false; QZ.sess={};
+  QZ.queue = ids.map(function(id){ return Q_MAP[parseInt(id)]; }).filter(Boolean);
+  document.getElementById("qtitle").textContent = "🔁 Banco de Repaso";
+  document.getElementById("qtop").style.background = "#b91c1c";
+  document.getElementById("qprogfill").style.background = "#ef4444";
+  document.getElementById("bdom").style.display="none";
+  showQ();
+  renderQ();
+}
+
+function showQ(){
+  document.getElementById("home").style.display="none";
+  document.getElementById("quiz").style.display="flex";
+}
+function goHome(){
+  document.getElementById("quiz").style.display="none";
+  document.getElementById("home").style.display="block";
+  updateHome();
+}
+
+function renderQ(){
+  var q = QZ.queue[QZ.idx];
+  if(!q){ showResult(); return; }
+  var L=["A","B","C","D"];
+  var pct = Math.round(QZ.idx/QZ.queue.length*100);
+  document.getElementById("qcount").textContent=(QZ.idx+1)+"/"+QZ.queue.length;
+  document.getElementById("qprogfill").style.width=pct+"%";
+  document.getElementById("bnxt").disabled=true;
+  document.getElementById("bdom").style.display="none";
+  QZ.done=false;
+
+  var bcolor = BLOCKS[q[1]] ? BLOCKS[q[1]].color : "#64748b";
+  var inB = ST.bank[q[0]]?" 🔁":"";
+  var inD = ST.dom[q[0]]?" ⭐":"";
+
+  var h='<div class="qcard">'
+    +'<div class="qmeta">'
+    +'<span class="qbadge" style="color:'+bcolor+';border-color:'+bcolor+'">'+q[1]+inB+inD+'</span>'
+    +'<span class="qbadge" style="color:var(--sub);border-color:var(--sub)">'+q[2]+'</span>'
+    +'</div>'
+    +'<div class="qtxt">'+q[3]+'</div>'
+    +'<div class="opts">';
+  q[4].forEach(function(o,i){
+    h+='<button class="obtn" id="ob'+i+'" onclick="ansQ('+i+')">'
+      +'<span class="oltr">'+L[i]+'</span>'
+      +'<span>'+o+'</span></button>';
+  });
+  h+='</div><div class="fb" id="qfb"></div></div>';
+  document.getElementById("qa").innerHTML=h;
+  document.getElementById("qscroll").scrollTop=0;
+}
+
+function ansQ(ch){
+  if(QZ.done) return;
+  QZ.done=true;
+  var q=QZ.queue[QZ.idx], ok=ch===q[5], L=["A","B","C","D"];
+  ST.r[q[0]] = ok?"ok":"bad";
+  QZ.sess[q[0]] = ok?"ok":"bad";
+  document.querySelectorAll(".obtn").forEach(function(b,i){
+    b.disabled=true;
+    if(i===q[5]) b.classList.add("ok");
+    if(i===ch&&!ok) b.classList.add("bad");
+  });
+  var fb=document.getElementById("qfb");
+  fb.classList.add("vis");
+  if(ok){
+    if(QZ.bk==="BANK"){
+      fb.innerHTML='<strong style="color:var(--ok)">✓ ¡Correcto!</strong> ¿Ya la dominas? Pulsa ⭐ para sacarla del banco definitivamente.';
+      document.getElementById("bdom").style.display="block";
+    } else {
+      rmBank(q[0]);
+      fb.innerHTML='<strong style="color:var(--ok)">✓ ¡Correcto!</strong>';
+    }
+  } else {
+    addBank(q[0]);
+    fb.innerHTML='<strong style="color:var(--bad)">✗ Incorrecto.</strong> Correcta: <strong>'+L[q[5]]+') '+q[4][q[5]]+'</strong>';
+  }
+  saveST();
+  document.getElementById("bnxt").disabled=false;
+  setTimeout(function(){ fb.scrollIntoView({behavior:"smooth",block:"nearest"}); },150);
+}
+
+function markDom(){
+  var q=QZ.queue[QZ.idx];
+  ST.dom[q[0]]=true;
+  rmBank(q[0]);
+  saveST();
+  document.getElementById("bdom").style.display="none";
+  document.getElementById("qfb").innerHTML='<strong style="color:var(--dom)">⭐ ¡Marcada como dominada!</strong> Desaparece del banco de repaso.';
+}
+
+function nxt(){
+  QZ.idx++;
+  if(QZ.idx>=QZ.queue.length) showResult();
+  else renderQ();
+}
+
+function showResult(){
+  var ok=0,bad=0;
+  Object.values(QZ.sess).forEach(function(v){ if(v==="ok") ok++; else bad++; });
+  var tot=ok+bad, pct=tot>0?Math.round(ok/tot*100):0;
+  var em=pct>=80?"🎉":pct>=60?"📚":"💪";
+  var bankN=Object.keys(ST.bank).length;
+  var bnotice=bankN>0
+    ?'<div class="rnotice" style="background:#fef2f2;border:1px solid #fecaca;color:#b91c1c">🔁 <strong>'+bankN+' preguntas</strong> en el banco de repaso. ¡Dales vueltas!</div>'
+    :'<div class="rnotice" style="background:var(--okb);border:1px solid #bbf7d0;color:var(--ok)">✅ ¡Banco vacío! Todo bajo control.</div>';
+  var isBank=QZ.bk==="BANK";
+  var h='<div class="rcard">'
+    +'<div class="rpct">'+pct+'%</div>'
+    +'<div class="rlbl">'+ok+' correctas de '+tot+' respondidas '+em+'</div>'
+    +'<div class="rstats"><div class="rst">✓ <strong style="color:var(--ok)">'+ok+'</strong></div><div class="rst">✗ <strong style="color:var(--bad)">'+bad+'</strong></div></div>'
+    +bnotice
+    +'<div class="rbtns">';
+  if(!isBank){
+    h+='<button class="rb-bank" onclick="startBank()">🔁 Ir al banco de repaso</button>';
+    h+='<button style="background:var(--bg);color:var(--txt);border:1px solid var(--brd);padding:13px;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;margin-top:8px" onclick="startBlock(\''+QZ.bk+'\')">↺ Repetir este bloque</button>';
+  } else {
+    h+='<button class="rb-bank" onclick="startBank()">↺ Repetir banco</button>';
+  }
+  h+='<button style="background:var(--bg);color:var(--txt);border:1px solid var(--brd);padding:13px;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;margin-top:8px" onclick="goHome()">← Volver al inicio</button>';
+  h+='</div></div>';
+  document.getElementById("qa").innerHTML=h;
+  document.getElementById("qprogfill").style.width="100%";
+  document.getElementById("bnxt").disabled=true;
+  document.getElementById("bdom").style.display="none";
+}
+
+// ═══════════ HOME ═══════════
+function updateHome(){
+  var vis=Object.keys(ST.r).length;
+  var okAll=Object.values(ST.r).filter(function(v){return v==="ok";}).length;
+  var bankN=Object.keys(ST.bank).length;
+  var domN=Object.keys(ST.dom).length;
+  document.getElementById("hs-vis").textContent=vis;
+  document.getElementById("hs-ok").textContent=okAll;
+  document.getElementById("hs-bank").textContent=bankN;
+  document.getElementById("hs-dom").textContent=domN;
+
+  Object.keys(BLOCKS).forEach(function(bk){
+    var B=BLOCKS[bk], ok=0, bad=0, un=0;
+    B.qs.forEach(function(q){
+      var r=ST.r[q[0]];
+      if(r==="ok") ok++;
+      else if(r==="bad") bad++;
+      else un++;
+    });
+    document.getElementById("ok-"+bk).textContent=ok;
+    document.getElementById("bad-"+bk).textContent=bad;
+    document.getElementById("un-"+bk).textContent=un;
+    var pct=B.qs.length>0?Math.round(ok/B.qs.length*100):0;
+    document.getElementById("bar-"+bk).style.width=pct+"%";
+  });
+
+  document.getElementById("bank-desc").textContent = bankN>0
+    ? bankN+" preguntas falladas pendientes de repasar"
+    : "Sin pendientes — ¡todo bajo control!";
+  document.getElementById("bank-empty").style.display = bankN===0?"block":"none";
+}
+
+// ═══════════ INIT ═══════════
+loadST();
+updateHome();
+setTimeout(function(){
+  var s=document.getElementById("splash");
+  s.style.opacity="0";
+  setTimeout(function(){ s.style.display="none"; document.getElementById("home").style.display="block"; },400);
+},900);
+</script>
+</body>
+</html>
